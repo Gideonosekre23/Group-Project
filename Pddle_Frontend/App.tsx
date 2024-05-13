@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AuthScreen from './src/AuthScreen';
 import LoginScreen from './src/LoginScreen';
 import RegisterScreen from './src/RegisterScreen';
+import MainScreen from './src/MainScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,6 +15,7 @@ const App = () => {
       <Stack.Screen name="Auth" component={AuthScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="MainScreen" component={MainScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

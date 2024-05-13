@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
     // Handle the login logic here
-    alert('Login pressed!');
+    navigation.navigate('MainScreen');
   };
 
   return (
@@ -15,6 +15,7 @@ const LoginScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor="#bfbfbf"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -23,11 +24,16 @@ const LoginScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor="#bfbfbf"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Login" onPress={handleLogin} />
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleLogin}>
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -42,7 +48,25 @@ const styles = StyleSheet.create({
     height: 40,
     marginBottom: 12,
     borderWidth: 1,
+    borderRadius: 5,
     padding: 10,
+    color: '#333333',
+  },
+  button: {
+    backgroundColor: '#15ADA4',
+    color: 'white',
+    paddingHorizontal: 30,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#15ADA4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
+  },
+  buttonText: {
+    color: 'white', // Set the text color
+    fontSize: 16, // Set text size
+    fontWeight: 'bold',
   }
 });
 
