@@ -1,0 +1,61 @@
+{
+    "customer_list": {},
+    "register_user": {
+        "username": "example_user",
+        "email": "user@example.com",
+        "password": "securepassword",
+        "phone_number": "1234567890",
+        "address": "123 Street, City"
+    },
+    "Login_user": {
+        "username": "example_user",
+        "password": "securepassword"
+    },
+    "update_user_profile": {
+        "field_to_update": "new_value"
+    },
+    "update_location": {
+        "latitude": 37.7749,
+        "longitude": -122.4194
+    },
+    "register_driver": {
+        "username": "example_driver",
+        "email": "driver@example.com",
+        "password": "securepassword",
+        "phone_number": "9876543210",
+        "address": "456 Avenue, Town"
+    },
+    "Login_driver": {
+        "username": "example_driver",
+        "password": "securepassword"
+    },
+    "update_driver_profile": {
+        "field_to_update": "new_value"
+    },
+    "request_ride": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "destination": {
+            "latitude": 37.7749,
+            "longitude": -122.4194
+        },
+        "requested_time": "2022-01-01T08:00:00",
+        "distance_km": 5.2,
+        "duration_hours": 1.5,
+        "price": 20.0
+    },
+    "accept_ride_request": {},
+    "decline_ride_request": {},
+    "start_trip": {},
+    "cancel_trip": {},
+    "end_trip": {
+        "token": "payment_token"
+    },
+    "add_bike": {
+        "brand": "BrandName",
+        "model": "ModelName",
+        "color": "Red",
+        "size": "Large",
+        "year": 2022
+    }
+}

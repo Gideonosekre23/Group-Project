@@ -28,6 +28,20 @@ urlpatterns = [
     path('Logout/',views.Logout_user),
     path('Search/<str:username>/',views.search_user_profile),
     path('Remove/',views.delete_user_profile),
-    path('Update/',views.update_user_profile)
+    path('Update/',views.update_user_profile),
+    path('LoginDriver/',views.Login_driver),
+    path('LogoutDriver/',views.Logout_driver),
+    path('UpdateDriver/',views.update_driver_profile),
+    path('DeleteDriver/',views.delete_driver_profile),
+    path('SearchDriver/<str:username>/',views.search_driver_profile),
+    path('AcceptRideRequest/<int:request_id>/',views.accept_ride_request),
+    path('RequestRide/',views.request_ride),
+    path('DeclineRideRequest/<int:request_id>/',views.decline_ride_request),
+    path('UpdateLocation/',views.update_location),
+    path('AddBike/',views.add_bike),
+    path('MakeBikeAvailable/<int:bike_id>/',views.make_bike_available),
+    path('GetAvailableBikes/',views.get_available_bikes),
+    path('SearchForRide/',views.search_for_ride),
+    
 
 ]

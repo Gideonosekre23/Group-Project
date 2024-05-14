@@ -1,6 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.contrib.gis.db.models import PointField
+
+
+
+
+
+
 
 # Create your models here.
 class UserProfile(models.Model):
@@ -11,7 +18,13 @@ class UserProfile(models.Model):
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     age = models.PositiveIntegerField(blank=True, null=True)
     is_subscribed_to_newsletter = models.BooleanField(default=False)
-    is_bike_owner = models.BooleanField(default=False)
+    current_location = PointField(null=True, blank=True)
+    
+
+
+
+
+
 
 
 # class Trip(models.Model):
@@ -42,12 +55,3 @@ class UserProfile(models.Model):
     
     
 
-# class Bike(models.Model):
-#     owner = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='bikes_owned')
-#     brand = models.CharField(max_length=100)
-#     model = models.CharField(max_length=100)
-#     color = models.CharField(max_length=50)
-#     size = models.CharField(max_length=20)
-#     year = models.PositiveIntegerField()
-#     description = models.TextField(blank=True)
-#     is_available = models.BooleanField(default=True)

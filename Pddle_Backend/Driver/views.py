@@ -1,38 +1,35 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view 
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from knox.models import AuthToken
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
-from .models import UserProfile
-from .serializers import UserProfileSerializer
+from customers.models import UserProfile
+from customers.serializers import UserProfileSerializer
 from django.contrib.auth.decorators import login_required
 from knox.views import LogoutAllView 
-from django.contrib.gis.geos import Point
 from django.contrib.auth import logout 
 
 @api_view(['GET']) 
 def customer_list(request):
-    customers = UserProfile.objects.all()
-    serialized = UserProfileSerializer(customers, many=True)   
+    Driver = UserProfile.objects.all()
+    serialized = UserProfileSerializer(Driver, many=True)   
     return JsonResponse(serialized.data, safe=False)
 
 @api_view(['POST'])
-def register_user(request):
+def register_driver(request):
     username = request.data.get('username')
     email = request.data.get('email')
     password = request.data.get('password')
     phone_number = request.data.get('phone_number')
     address = request.data.get('address')
-    cpn = request.data.get('cpn')
     age = request.data.get('age')
+    cpn = request.data.get('cpn')
     current_location = request.data.get('current_location')
-    profile_picture = request.data.get('picture_picture')
-
-
+    profile_picture = request.data.get('profile_picture')
 
     # Check if the username or email already exists
     if User.objects.filter(username=username).exists():
@@ -49,7 +46,7 @@ def register_user(request):
     return Response({'message': 'User registered successfully'})
 
 @api_view(['POST'])
-def Login_user(request):
+def Login_driver(request):
     username = request.data.get('username')
     password = request.data.get('password')
 
@@ -66,7 +63,7 @@ def Login_user(request):
         return Response({'error': 'Invalid credentials'}, status=400)
 
 @api_view(['POST'])
-def Logout_user(request):
+def Logout_driver(request):
   
     if request.user.is_authenticated:
         # Call Knox's LogoutAllView
@@ -77,7 +74,7 @@ def Logout_user(request):
 
 @api_view(['PUT'])
 @login_required
-def update_user_profile(request):
+def update_driver_profile(request):
     # get the UserProfile object for the authenticated user
     user_profile = request.user.userprofile 
 
@@ -95,7 +92,7 @@ def update_user_profile(request):
 
 @api_view(['DELETE'])
 @login_required
-def delete_user_profile(request):
+def delete_driver_profile(request):
     # Retrieve the UserProfile object for the authenticated user
     user_profile = request.user.userprofile
 
@@ -107,7 +104,7 @@ def delete_user_profile(request):
 
 @api_view(['GET'])
 @login_required
-def search_user_profile(request, username):
+def search_driver_profile(request, username):
     try:
         # Retrieve the user based on the provided username
         user = User.objects.get(username=username)
@@ -121,17 +118,3 @@ def search_user_profile(request, username):
     serializer = UserProfileSerializer(user_profile)
 
     return Response(serializer.data)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def update_location(request):
-    user_profile = request.user.userprofile
-    latitude = request.data.get('latitude')
-    longitude = request.data.get('longitude')
-    if latitude and longitude:
-        user_profile.current_location = Point(float(longitude), float(latitude), srid=4326)
-        user_profile.save()
-        return Response({'status': 'location updated'})
-    else:
-        return Response({'error': 'Invalid data'}, status=400)

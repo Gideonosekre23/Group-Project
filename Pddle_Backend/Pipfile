@@ -12,6 +12,7 @@ daphne = "*"
 django-rest-authtoken = "*"
 pillow = "*"
 django-rest-knox = "*"
+gdal = "==3.3.0"
 
 [dev-packages]
 

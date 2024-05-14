@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'django.contrib.gis',
+   
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -39,6 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'debug_toolbar',
     'customers',
+    'Bike',
+    'Driver',
+    'channels',
+    'Riderequest',
+    'Trip'
     
     'rest_framework',
     'knox',
@@ -46,6 +53,7 @@ INSTALLED_APPS = [
    
 
 ]
+MAX_PAYMENT_ATTEMPTS = 3 
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -73,6 +81,8 @@ INTERNAL_IPS = [
 ]
 
 ROOT_URLCONF = 'Paddleplus.urls'
+
+
 
 TEMPLATES = [
     {
@@ -144,3 +154,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+GDAL_LIBRARY_PATH = 'C:\\Users\\gideo\\.virtualenvs\\Pddle_Backend-pTEKeIGz\\Lib\\site-packages\\osgeo\\gdal.dll'
+
+GEOS_LIBRARY_PATH = 'C:\\Users\\gideo\\.virtualenvs\\Pddle_Backend-pTEKeIGz\\Lib\\site-packages\\osgeo\\geos_c.dll'
