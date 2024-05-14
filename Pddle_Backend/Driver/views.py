@@ -12,6 +12,7 @@ from customers.serializers import UserProfileSerializer
 from django.contrib.auth.decorators import login_required
 from knox.views import LogoutAllView 
 from django.contrib.auth import logout 
+from .models import DriverProfile
 
 @api_view(['GET']) 
 def customer_list(request):
@@ -20,30 +21,28 @@ def customer_list(request):
     return JsonResponse(serialized.data, safe=False)
 
 @api_view(['POST'])
+@api_view(['POST'])
 def register_driver(request):
     username = request.data.get('username')
     email = request.data.get('email')
     password = request.data.get('password')
     phone_number = request.data.get('phone_number')
-    address = request.data.get('address')
-    age = request.data.get('age')
     cpn = request.data.get('cpn')
-    current_location = request.data.get('current_location')
     profile_picture = request.data.get('profile_picture')
+    latitude = request.data.get('latitude')
+    longitude = request.data.get('longitude')
 
-    # Check if the username or email already exists
     if User.objects.filter(username=username).exists():
-       return Response({'error': 'Username already exists'}, status=400)
+        return Response({'error': 'Username already exists'}, status=400)
     elif User.objects.filter(email=email).exists():
         return Response({'error': 'Email already exists'}, status=400)
 
-    # Create the user
     user = User.objects.create_user(username=username, email=email, password=password)
+    DriverProfile.objects.create(user=user, phone_number=phone_number, cpn=cpn, profile_picture=profile_picture, latitude=latitude, longitude=longitude)
+    
+    return Response({'message': 'Driver registered successfully'})
 
-    # Create the user profile
-    UserProfile.objects.create(user=user, phone_number=phone_number, address=address, age=age, cpn=cpn, current_location=current_location, profile_picture=profile_picture)
-
-    return Response({'message': 'User registered successfully'})
+    
 
 @api_view(['POST'])
 def Login_driver(request):

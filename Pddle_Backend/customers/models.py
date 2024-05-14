@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator, MaxLengthValidator
-from django.contrib.gis.db.models import PointField
+
 
 
 
@@ -18,7 +18,8 @@ class UserProfile(models.Model):
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     age = models.PositiveIntegerField(blank=True, null=True)
     is_subscribed_to_newsletter = models.BooleanField(default=False)
-    current_location = PointField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     
 
 

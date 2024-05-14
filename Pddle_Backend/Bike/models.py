@@ -15,4 +15,5 @@ class Bike(models.Model):
     year = models.PositiveIntegerField()
     description = models.TextField(blank=True)
     is_available = models.BooleanField(default=True)
-    current_location = PointField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)

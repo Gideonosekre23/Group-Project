@@ -8,25 +8,20 @@ from customers.serializers import BikeSerializer
 from .models import Bike
 from django.contrib.gis.geos import Point
 from django.contrib.gis.db.models.functions import Distance
-from .models import Trip
+from Trip.models import Trip
+from geopy.distance import geodesic
 from .pricing import calculate_price
 
 @api_view(['POST'])
 def add_bike(request):
-    # Check if the user is authenticated and is a driver
     if request.user.is_authenticated and hasattr(request.user, 'driver_profile'):
-        if request.method == 'POST':
-            # Serialize the request data
-            serializer = BikeSerializer(data=request.data, context={'request': request})
+        serializer = BikeSerializer(data=request.data, context={'request': request})
 
-            if serializer.is_valid():
-                # Create the bike
-                bike = serializer.save()
-                bike.current_location = request.user.driver_profile.current_location
-                bike.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            bike = serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response({'error': 'Only authenticated drivers can add bikes.'}, status=status.HTTP_403_FORBIDDEN)
 
@@ -52,66 +47,91 @@ def make_bike_available(request, bike_id):
 
 @api_view(['GET'])
 def get_available_bikes(request):
-    # Get the latitude and longitude from the request parameters
     latitude = request.query_params.get('latitude')
     longitude = request.query_params.get('longitude')
 
     if not (latitude and longitude):
         return Response({'error': 'Latitude and longitude parameters are required'}, status=400)
 
-    # Convert latitude and longitude to Point object
-    location = Point(float(longitude), float(latitude), srid=4326)
+    user_location = (float(latitude), float(longitude))
+    search_radius_km = 5000  
 
-    # Define the search radius (in meters)
-    search_radius = 5000  
+    bikes = Bike.objects.filter(is_available=True)
+    nearby_bikes = []
 
-    # Query all available bikes within the search radius of the provided location
-    available_bikes = Bike.objects.filter(is_available=True, current_location__distance_lte=(location, search_radius)).annotate(distance=Distance('current_location', location)).order_by('distance')
+    for bike in bikes:
+        if bike.latitude is not None and bike.longitude is not None:
+            bike_location = (bike.latitude, bike.longitude)
+            distance = geodesic(user_location, bike_location).kilometers
+            if distance <= search_radius_km:
+                bike.distance = distance  # Add distance attribute for sorting
+                nearby_bikes.append(bike)
 
-    # Serialize the queryset of available bikes
-    serializer = BikeSerializer(available_bikes, many=True)
+    nearby_bikes.sort(key=lambda x: x.distance)
 
+    serializer = BikeSerializer(nearby_bikes, many=True)
     return Response(serializer.data)
-    return Response(serializer.data)
-    return Response(serializer.data)
 
 
-# views.py
+
 
 
 
 
 @api_view(['POST'])
 def search_for_ride(request):
-    # Get customer's location from the request data
-    customer_location = request.data.get('customer_location')
+    # Get customer's latitude and longitude from the request data
+    latitude = request.data.get('latitude')
+    longitude = request.data.get('longitude')
     
-    # Query for completely available bikes
-    available_bikes = Bike.objects.filter(trip=None, current_location=customer_location)
-    
-    if not available_bikes:
-        # If no completely available bikes, check for partially available bikes
-        partially_available_trips = Trip.objects.filter(
-            status='ontrip', 
-            destination_location=customer_location
-        )
-        
-        if partially_available_trips.exists():
-            return Response({'message': 'Bike available soon (90% done trip)'})
-        else:
-            return Response({'message': 'No available bikes at the moment'})
-    else:
+    if not (latitude and longitude):
+        return Response({'error': 'Latitude and longitude are required'}, status=400)
+
+    customer_location = (float(latitude), float(longitude))
+
+    # Define the search radius (in kilometers)
+    search_radius_km = 5  # Adjust the search radius as needed
+
+    # Query all available bikes
+    available_bikes = Bike.objects.filter(is_available=True)
+    nearby_bikes = []
+
+    for bike in available_bikes:
+        if bike.latitude is not None and bike.longitude is not None:
+            bike_location = (bike.latitude, bike.longitude)
+            distance = geodesic(customer_location, bike_location).kilometers
+            if distance <= search_radius_km:
+                bike.distance = distance  # Add distance attribute for sorting
+                nearby_bikes.append(bike)
+
+    nearby_bikes.sort(key=lambda x: x.distance)
+
+    if nearby_bikes:
         # Calculate price for the ride
-        # For simplicity, let's assume the distance and duration are provided in the request data
         distance_km = request.data.get('distance_km')
         duration_hours = request.data.get('duration_hours')
         base_fare = 5  # Define your base fare
         rate_per_km = 2  # Define your rate per kilometer
         rate_per_hour = 1.5  # Define your rate per hour
-        
+
         # Call the calculate_price function to get the total fare
         price = calculate_price(distance_km, duration_hours, base_fare, rate_per_km, rate_per_hour)
-        
+
         # Serialize the data and return available bikes along with price
-        serializer = BikeSerializer(available_bikes, many=True)
+        serializer = BikeSerializer(nearby_bikes, many=True)
         return Response({'available_bikes': serializer.data, 'price': price})
+    else:
+        # Check for partially available bikes (e.g., bikes that will become available soon)
+        partially_available_trips = Trip.objects.filter(status='ontrip')
+        partially_available_bikes = []
+        
+        for trip in partially_available_trips:
+            destination_location = (trip.destination_latitude, trip.destination_longitude)
+            distance_to_destination = geodesic(customer_location, destination_location).kilometers
+            if distance_to_destination <= search_radius_km * 0.1:  # e.g., within 10% of the search radius
+                partially_available_bikes.append(trip.bike)
+        
+        if partially_available_bikes:
+            return Response({'message': 'Bike available soon (90% done trip)'})
+        else:
+            return Response({'message': 'No available bikes at the moment'})

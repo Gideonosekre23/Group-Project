@@ -13,4 +13,5 @@ class DriverProfile(models.Model):
     phone_number = models.CharField(max_length=15)
     created_on = models.DateTimeField(auto_now_add=True)
     edited_at = models.DateTimeField(auto_now=True)
-    current_location = PointField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)

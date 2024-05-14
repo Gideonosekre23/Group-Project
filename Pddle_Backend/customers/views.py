@@ -29,7 +29,8 @@ def register_user(request):
     address = request.data.get('address')
     cpn = request.data.get('cpn')
     age = request.data.get('age')
-    current_location = request.data.get('current_location')
+    latitude = request.data.get('latitude')
+    longitude = request.data.get('longitude')
     profile_picture = request.data.get('picture_picture')
 
 
@@ -44,7 +45,16 @@ def register_user(request):
     user = User.objects.create_user(username=username, email=email, password=password)
 
     # Create the user profile
-    UserProfile.objects.create(user=user, phone_number=phone_number, address=address, age=age, cpn=cpn, current_location=current_location, profile_picture=profile_picture)
+    UserProfile.objects.create(
+        user=user,
+        phone_number=phone_number,
+        address=address,
+        age=age,
+        cpn=cpn,
+        latitude=latitude,
+        longitude=longitude,
+        profile_picture=profile_picture
+    )
 
     return Response({'message': 'User registered successfully'})
 
@@ -130,7 +140,8 @@ def update_location(request):
     latitude = request.data.get('latitude')
     longitude = request.data.get('longitude')
     if latitude and longitude:
-        user_profile.current_location = Point(float(longitude), float(latitude), srid=4326)
+        user_profile.latitude = float(latitude)
+        user_profile.longitude = float(longitude)
         user_profile.save()
         return Response({'status': 'location updated'})
     else:

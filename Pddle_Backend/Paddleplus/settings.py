@@ -45,12 +45,13 @@ INSTALLED_APPS = [
     'Driver',
     'channels',
     'Riderequest',
-    'Trip'
+    'Trip',
+    'push_notifications', 
     
     'rest_framework',
-    'knox',
-   
-   
+    'knox',  
+
+
 
 ]
 MAX_PAYMENT_ATTEMPTS = 3 
@@ -108,8 +109,12 @@ WSGI_APPLICATION = 'Paddleplus.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'YSzCSPaZwUGAUBUShlkBUQJuylCRDzSj',
+        'HOST': 'roundhouse.proxy.rlwy.net',
+        'PORT': '53149',
     }
 }
 
@@ -158,3 +163,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 GDAL_LIBRARY_PATH = 'C:\\Users\\gideo\\.virtualenvs\\Pddle_Backend-pTEKeIGz\\Lib\\site-packages\\osgeo\\gdal.dll'
 
 GEOS_LIBRARY_PATH = 'C:\\Users\\gideo\\.virtualenvs\\Pddle_Backend-pTEKeIGz\\Lib\\site-packages\\osgeo\\geos_c.dll'
+
+
+
+# Stripe settings
+STRIPE_SECRET_KEY = 'sk_test_51PGJDiRqbLSOta6ScRBmNsqwPP4TRfn68PdQ1s5XwrlwNCnq5gnkSuodF33XlirP8aH3IRhSiBoEVWmqPl6oBGpD00svF90NKt'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51PGJDiRqbLSOta6SLJBGhARazsOMPU0r0MLdm5RdPNMbcFMtjNScQ6LvwcZLPFjaQdTWLFRXDmDgTTVtdxhzz2Xp00tuFJsNG6'

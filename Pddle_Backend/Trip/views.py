@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from django.conf import settings
 from django.http import JsonResponse
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from Trip.models import Trip
+from .models import Trip
+from Bike.models import Bike
 import stripe
-
+from geopy.distance import geodesic
 
 # Initialize Stripe API with your API key
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -21,7 +21,7 @@ def start_trip(request, trip_id):
     except Trip.DoesNotExist:
         return JsonResponse({'error': 'Trip not found or you are not authorized'}, status=404)
 
-    if trip.status != 'accepted':
+    if trip.status != 'created':
         return JsonResponse({'error': 'Trip cannot be started'}, status=400)
 
     # Set trip status to 'started'
@@ -61,6 +61,12 @@ def end_trip(request, trip_id):
         return JsonResponse({'error': 'Trip cannot be ended'}, status=400)
 
     # Calculate total price for the trip
+    if trip.distance is None:
+        origin_coords = (trip.origin_latitude, trip.origin_longitude)
+        destination_coords = (trip.destination_latitude, trip.destination_longitude)
+        trip.distance = geodesic(origin_coords, destination_coords).kilometers
+        trip.save()
+
     total_price = trip.price  # Assuming price is already calculated and stored in the trip model
 
     try:
@@ -94,6 +100,3 @@ def end_trip(request, trip_id):
     except Exception as e:
         # Other errors occurred, return error response
         return JsonResponse({'error': str(e)}, status=500)
-
-
-
