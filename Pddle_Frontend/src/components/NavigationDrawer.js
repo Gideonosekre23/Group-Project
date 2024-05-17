@@ -1,15 +1,25 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, Animated, StyleSheet, TouchableOpacity } from 'react-native';
+// NavigationDrawer.js
+import React, {useState, useRef} from 'react';
+import {
+  View,
+  Text,
+  Animated,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
-const NavigationDrawer = ({ isOpen, toggleDrawer }) => {
-  const drawerWidth = 300; // Adjust width as needed
-  const translateX = useRef(new Animated.Value(-drawerWidth)).current; // Start off-screen
+const NavigationDrawer = ({isOpen, toggleDrawer}) => {
+  const drawerWidth = 300;
+  const translateX = useRef(new Animated.Value(-drawerWidth)).current;
+  const navigation = useNavigation();
 
   // Animation for sliding in and out
   const animateDrawer = () => {
     Animated.spring(translateX, {
       toValue: isOpen ? 0 : -drawerWidth,
-      useNativeDriver: true
+      useNativeDriver: true,
     }).start();
   };
 
@@ -18,10 +28,32 @@ const NavigationDrawer = ({ isOpen, toggleDrawer }) => {
     animateDrawer();
   }, [isOpen]);
 
+  const goToProfileScreen = () => {
+    navigation.navigate('Profile');
+    toggleDrawer();
+  };
+
+  const goToSettingsScreen = () => {
+    navigation.navigate('SettingsScreen');
+    toggleDrawer();
+  };
+
   return (
-    <Animated.View style={[styles.drawer, { transform: [{ translateX }] }]}>
-      <Text style={styles.option}>Option 1</Text>
-      <Text style={styles.option}>Option 2</Text>
+    <Animated.View style={[styles.drawer, {transform: [{translateX}]}]}>
+      <TouchableOpacity
+        onPress={goToProfileScreen}
+        style={styles.profileIconContainer}>
+        <Image
+          source={require('../../assets/images/Profile_Picture.png')}
+          style={styles.profileIcon}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={goToSettingsScreen}>
+        <Text style={styles.option}>Settings</Text>
+      </TouchableOpacity>
+      <TouchableOpacity>
+        <Text style={styles.option}>Payment Method</Text>
+      </TouchableOpacity>
     </Animated.View>
   );
 };
@@ -40,13 +72,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
-    zIndex: 1000 // Ensure it overlays other content
+    zIndex: 1000, // Ensure it overlays other content
   },
   option: {
     fontSize: 18,
     marginBottom: 20,
     color: 'black',
-  }
+  },
+  profileIconContainer: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+  },
+  profileIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
 });
 
 export default NavigationDrawer;

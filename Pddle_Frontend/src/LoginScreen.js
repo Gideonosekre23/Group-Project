@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import {COLORS} from './constants/colors';
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleLogin = () => {
-    // Handle the login logic here
-    navigation.navigate('MainScreen');
+    if (!email || !password) {
+      setError('Please enter both email and password');
+      return;
+    }
+
+    // Simulate login (replace with actual login logic)
+    if (email === 'test@example.com' && password === 'password') {
+      navigation.navigate('MainScreen');
+    } else {
+      setError('Invalid email or password');
+    }
   };
 
   return (
@@ -29,9 +48,8 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleLogin}>
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
     </View>
@@ -53,8 +71,8 @@ const styles = StyleSheet.create({
     color: '#333333',
   },
   button: {
-    backgroundColor: '#15ADA4',
-    color: 'white',
+    backgroundColor: COLORS.primary,
+    color: COLORS.buttonText,
     paddingHorizontal: 30,
     borderRadius: 6,
     borderWidth: 1,
@@ -64,10 +82,14 @@ const styles = StyleSheet.create({
     height: 40,
   },
   buttonText: {
-    color: 'white', // Set the text color
-    fontSize: 16, // Set text size
+    color: COLORS.buttonText,
+    fontSize: 16,
     fontWeight: 'bold',
-  }
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10,
+  },
 });
 
 export default LoginScreen;
