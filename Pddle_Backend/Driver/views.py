@@ -21,7 +21,6 @@ def customer_list(request):
     return JsonResponse(serialized.data, safe=False)
 
 @api_view(['POST'])
-@api_view(['POST'])
 def register_driver(request):
     username = request.data.get('username')
     email = request.data.get('email')

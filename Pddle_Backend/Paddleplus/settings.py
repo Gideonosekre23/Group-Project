@@ -12,28 +12,17 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-b-hr!hatnl8ra)k+*n=r&lbe7tb)qw@b!sx5n03_h)t6nsnru='
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.gis',
-   
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -47,19 +36,14 @@ INSTALLED_APPS = [
     'Riderequest',
     'Trip',
     'push_notifications', 
-    
     'rest_framework',
-    'knox',  
-
-
-
+    'knox',
 ]
+
 MAX_PAYMENT_ATTEMPTS = 3 
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
         'knox.auth.TokenAuthentication'
     ]
 }
@@ -72,18 +56,14 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 INTERNAL_IPS = [
-    # ...
     "127.0.0.1",
-    # ...
 ]
 
 ROOT_URLCONF = 'Paddleplus.urls'
-
-
 
 TEMPLATES = [
     {
@@ -103,9 +83,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Paddleplus.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+# Add the ASGI application
+ASGI_APPLICATION = 'Paddleplus.asgi.application'
 
 DATABASES = {
     'default': {
@@ -117,10 +96,6 @@ DATABASES = {
         'PORT': '53149',
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -137,10 +112,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -149,23 +120,22 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
 STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 GDAL_LIBRARY_PATH = 'C:\\Users\\gideo\\.virtualenvs\\Pddle_Backend-pTEKeIGz\\Lib\\site-packages\\osgeo\\gdal.dll'
-
 GEOS_LIBRARY_PATH = 'C:\\Users\\gideo\\.virtualenvs\\Pddle_Backend-pTEKeIGz\\Lib\\site-packages\\osgeo\\geos_c.dll'
 
-
-
-# Stripe settings
 STRIPE_SECRET_KEY = 'sk_test_51PGJDiRqbLSOta6ScRBmNsqwPP4TRfn68PdQ1s5XwrlwNCnq5gnkSuodF33XlirP8aH3IRhSiBoEVWmqPl6oBGpD00svF90NKt'
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51PGJDiRqbLSOta6SLJBGhARazsOMPU0r0MLdm5RdPNMbcFMtjNScQ6LvwcZLPFjaQdTWLFRXDmDgTTVtdxhzz2Xp00tuFJsNG6'
+
+# Add the CHANNEL_LAYERS configuration
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],  # Redis server
+        },
+    },
+}
