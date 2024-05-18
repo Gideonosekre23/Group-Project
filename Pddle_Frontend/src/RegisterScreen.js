@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,8 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import {COLORS} from './constants/colors';
+import { COLORS } from './constants/colors';
+import { getCustomerInfo } from './api/auth';
 
 const RegisterScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
@@ -30,7 +31,7 @@ const RegisterScreen = ({ navigation }) => {
       console.log("In handleGetInfo");
       console.log(data);
     } catch (err) {
-      setError(err.message || 'Error fetching customer info');
+      alert(err.message || 'Error fetching customer info');
     }
   };
 

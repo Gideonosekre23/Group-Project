@@ -71,7 +71,7 @@ def Login_user(request):
         _, token = AuthToken.objects.create(user)
         returninguser = UserProfileSerializer(user.userprofile)
         jsondata = returninguser.data
-        return Response({'user ': {'username':user.username,'email':user.email, 'phone_number' : jsondata['phone_number'] , 'token': token} })
+        return Response({'user': {'username':user.username,'email':user.email, 'phone_number' : jsondata['phone_number'] , 'token': token} })
     else:
         return Response({'error': 'Invalid credentials'}, status=400)
 
