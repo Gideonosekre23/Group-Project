@@ -1,7 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Dimensions, Platform, PermissionsAndroid, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Dimensions,
+  Platform,
+  PermissionsAndroid,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import MapView from 'react-native-maps';
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
 import NavigationDrawer from './components/NavigationDrawer';
 
 const MainScreen = () => {
@@ -25,15 +35,15 @@ const MainScreen = () => {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
-          title: "Location Access Required",
-          message: "This app needs to access your location",
-        }
+          title: 'Location Access Required',
+          message: 'This app needs to access your location',
+        },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log("Locate curr pos");
+        console.log('Locate curr pos');
         locateCurrentPosition();
       } else {
-        alert("Location permission denied");
+        alert('Location permission denied');
       }
     } catch (err) {
       console.warn(err);
@@ -43,18 +53,18 @@ const MainScreen = () => {
   const locateCurrentPosition = () => {
     Geolocation.getCurrentPosition(
       position => {
-        const { latitude, longitude } = position.coords;
+        const {latitude, longitude} = position.coords;
         setRegion({
           latitude,
           longitude,
           latitudeDelta: 0.005,
-          longitudeDelta: 0.005
+          longitudeDelta: 0.005,
         });
       },
       error => {
         alert(error.message);
       },
-      { enableHighAccuracy: true, timeout: 15000 }
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   };
 
@@ -63,13 +73,17 @@ const MainScreen = () => {
       {region ? (
         <MapView
           style={styles.map}
-          initialRegion={region}
+          region={region}
           showsUserLocation={true}
           followUserLocation={true}
           zoomEnabled={true}
         />
       ) : (
-        <ActivityIndicator style={styles.activityIndicator} size="large" color="#0000ff" />
+        <ActivityIndicator
+          style={styles.activityIndicator}
+          size="large"
+          color="#0000ff"
+        />
       )}
       <View style={styles.searchBar}>
         <TextInput
@@ -87,7 +101,7 @@ const MainScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   map: {
     width: Dimensions.get('window').width,
@@ -97,7 +111,7 @@ const styles = StyleSheet.create({
     height: '20%', // 30% of screen height
     backgroundColor: '#fff',
     padding: 20,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   activityIndicator: {
     height: '80%',
@@ -125,7 +139,7 @@ const styles = StyleSheet.create({
   menuIcon: {
     color: 'white',
     fontSize: 24,
-  }
+  },
 });
 
 export default MainScreen;
