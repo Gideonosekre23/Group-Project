@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import MapView from 'react-native-maps';
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
 import NavigationDrawer from './components/NavigationDrawer';
 
 const MainScreen = () => {
@@ -64,7 +64,7 @@ const MainScreen = () => {
       error => {
         alert(error.message);
       },
-      {enableHighAccuracy: true, timeout: 15000},
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   };
 
@@ -73,7 +73,7 @@ const MainScreen = () => {
       {region ? (
         <MapView
           style={styles.map}
-          initialRegion={region}
+          region={region}
           showsUserLocation={true}
           followUserLocation={true}
           zoomEnabled={true}

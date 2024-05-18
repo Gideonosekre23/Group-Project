@@ -7,8 +7,9 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import {COLORS} from './constants/colors';
 
-const RegisterScreen = () => {
+const RegisterScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [cnp, setCnp] = useState('');
@@ -21,6 +22,16 @@ const RegisterScreen = () => {
   const handleRegister = ({navigation}) => {
     // Handle the registration logic here
     navigation.navigate('Auth');
+  };
+
+  const handleGetCustomerInfo = async () => {
+    try {
+      const data = await getCustomerInfo();
+      console.log("In handleGetInfo");
+      console.log(data);
+    } catch (err) {
+      setError(err.message || 'Error fetching customer info');
+    }
   };
 
   return (
@@ -87,6 +98,9 @@ const RegisterScreen = () => {
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={handleGetCustomerInfo}>
+        <Text style={styles.buttonText}>Get Customer Info</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -103,22 +117,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     padding: 10,
-    color: 'red',
-    color: '#333333',
   },
   button: {
-    backgroundColor: '#15ADA4',
-    color: 'white',
+    backgroundColor: COLORS.primary,
+    color: COLORS.buttonText,
     paddingHorizontal: 30,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#15ADA4',
+    borderColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
     height: 40,
   },
   buttonText: {
-    color: 'white', // Set the text color
+    color: COLORS.buttonText, // Set the text color
     fontSize: 16, // Set text size
     fontWeight: 'bold',
   },

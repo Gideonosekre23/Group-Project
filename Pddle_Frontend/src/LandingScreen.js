@@ -1,9 +1,9 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
-import {COLORS} from './constants/colors';
-import {globalStyles, theme} from './constants/styles';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { COLORS } from './constants/colors';
+import { globalStyles, theme } from './constants/styles';
 
-const LandingScreen = ({navigation}) => {
+const LandingScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -22,7 +22,7 @@ const LandingScreen = ({navigation}) => {
         <Text style={[globalStyles.text, styles.title]}>
           Get started with Paddle Plus
         </Text>
-        <View style={(globalStyles.button, styles.button)}>
+        <View style={[globalStyles.button, styles.button]}>
           <Text style={[globalStyles.text, styles.buttonText]}>Continue</Text>
         </View>
       </TouchableOpacity>
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   appName: {
     position: 'absolute',
     top: 20,
-    left: 20,
+    right: 20,
     fontSize: 30,
     fontWeight: 'bold',
     color: 'white',
@@ -57,22 +57,20 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
+    paddingVertical: 10,
   },
   title: {
-    paddingTop: 20,
-    paddingLeft: 20,
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: COLORS.text,
     textAlign: 'left',
-    alignSelf: 'flex-start',
   },
   button: {
     backgroundColor: COLORS.primary,
     paddingHorizontal: 50,
-    paddingVertical: 20,
+    paddingVertical: 10,
     borderRadius: 6,
     marginTop: 10,
     width: '90%',
@@ -81,7 +79,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: COLORS.buttonText,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });

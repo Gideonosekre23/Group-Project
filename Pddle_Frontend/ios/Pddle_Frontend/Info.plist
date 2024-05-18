@@ -52,5 +52,9 @@
 		<string>OpenSans-Italic-VariableFont_wdth,wght.ttf</string>
 		<string>OpenSans-VariableFont_wdth,wght.ttf</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need access to your location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need access to your location</string>
 </dict>
 </plist>

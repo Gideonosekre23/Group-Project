@@ -22,7 +22,7 @@ const LoginScreen = ({navigation}) => {
     }
 
     // Simulate login (replace with actual login logic)
-    if (email === 'test@example.com' && password === 'password') {
+    if (email === 'test' && password === '123') {
       navigation.navigate('MainScreen');
     } else {
       setError('Invalid email or password');
@@ -49,9 +49,12 @@ const LoginScreen = ({navigation}) => {
         secureTextEntry
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+      <View style={styles.loginButtonContainer}>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+        <Text style={styles.registerText} onPress={() => navigation.navigate('Register')}>Don't have an account? Register here!</Text>
+      </View>
     </View>
   );
 };
@@ -70,13 +73,22 @@ const styles = StyleSheet.create({
     padding: 10,
     color: '#333333',
   },
+  loginButtonContainer: {
+    
+  },
+  registerText: {
+    color: COLORS.text,
+    fontSize: 14,
+    marginTop: 6,
+    textDecorationLine: 'underline',
+  },
   button: {
     backgroundColor: COLORS.primary,
     color: COLORS.buttonText,
     paddingHorizontal: 30,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#15ADA4',
+    borderColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
     height: 40,
