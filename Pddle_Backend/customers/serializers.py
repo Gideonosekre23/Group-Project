@@ -11,7 +11,7 @@ class UserProfileSerializer(serializers.ModelSerializer) :
     email = serializers.ReadOnlyField(source='user.email')
     class Meta:
         model= UserProfile
-        fields =  ['username', 'email', 'address', 'phone_number']
+        fields =  ['username', 'email', 'address', 'phone_number' ,'profile_picture']
 
 class RideRequestSerializer(serializers.ModelSerializer):
     class Meta:

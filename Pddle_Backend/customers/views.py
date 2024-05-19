@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from knox.views import LogoutAllView 
 from django.contrib.gis.geos import Point
 from django.contrib.auth import logout 
+from django.db import transaction
 
 @api_view(['GET']) 
 def customer_list(request):
@@ -40,23 +41,24 @@ def register_user(request):
        return Response({'error': 'Username already exists'}, status=400)
     elif User.objects.filter(email=email).exists():
         return Response({'error': 'Email already exists'}, status=400)
+    try:
+        with transaction.atomic():
+            user = User.objects.create_user(username=username, email=email, password=password)
 
-    # Create the user
-    user = User.objects.create_user(username=username, email=email, password=password)
-
-    # Create the user profile
-    UserProfile.objects.create(
-        user=user,
-        phone_number=phone_number,
-        address=address,
-        age=age,
-        cpn=cpn,
-        latitude=latitude,
-        longitude=longitude,
-        profile_picture=profile_picture
-    )
-
-    return Response({'message': 'User registered successfully'})
+            # Create the user profile
+            UserProfile.objects.create(
+                user=user,
+                phone_number=phone_number,
+                address=address,
+                age=age,
+                cpn=cpn,
+                latitude=latitude,
+                longitude=longitude,
+                profile_picture=profile_picture
+            )
+        return Response({'message': 'User registered successfully'})
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
 
 @api_view(['POST'])
 def Login_user(request):
@@ -71,7 +73,7 @@ def Login_user(request):
         _, token = AuthToken.objects.create(user)
         returninguser = UserProfileSerializer(user.userprofile)
         jsondata = returninguser.data
-        return Response({'user ': {'username':user.username,'email':user.email, 'phone_number' : jsondata['phone_number'] , 'token': token} })
+        return Response({'user ': {'username':user.username,'email':user.email, 'phone_number' : jsondata['phone_number'] ,'profile_picture': jsondata['profile_picture'], 'address': jsondata['address'], 'token': token} })
     else:
         return Response({'error': 'Invalid credentials'}, status=400)
 
@@ -145,4 +147,5 @@ def update_location(request):
         user_profile.save()
         return Response({'status': 'location updated'})
     else:
+        return Response({'error': 'Invalid data'}, status=400)
         return Response({'error': 'Invalid data'}, status=400)

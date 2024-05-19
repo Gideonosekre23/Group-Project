@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.db import transaction
 from rest_framework import status
 from rest_framework.decorators import api_view 
 from rest_framework.response import Response
@@ -35,11 +36,22 @@ def register_driver(request):
         return Response({'error': 'Username already exists'}, status=400)
     elif User.objects.filter(email=email).exists():
         return Response({'error': 'Email already exists'}, status=400)
-
-    user = User.objects.create_user(username=username, email=email, password=password)
-    DriverProfile.objects.create(user=user, phone_number=phone_number, cpn=cpn, profile_picture=profile_picture, latitude=latitude, longitude=longitude)
+    try:
+        with transaction.atomic():
+            user = User.objects.create_user(username=username, email=email, password=password)
+            DriverProfile.objects.create(user=user,
+                                        phone_number=phone_number,
+                                        cpn=cpn, 
+                                        profile_picture=profile_picture,
+                                        latitude=latitude, 
+                                        longitude=longitude,
+                                        profile_picture=profile_picture  
+                                            )
+            
+        return Response({'message': 'Driver registered successfully'})
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
     
-    return Response({'message': 'Driver registered successfully'})
 
     
 
@@ -56,7 +68,7 @@ def Login_driver(request):
         _, token = AuthToken.objects.create(user)
         returninguser = UserProfileSerializer(user.userprofile)
         jsondata = returninguser.data
-        return Response({'user ': {'username':user.username,'email':user.email, 'phone_number' : jsondata['phone_number'] , 'token': token} })
+        return Response({'user ': {'username':user.username,'email':user.email, 'phone_number' : jsondata['phone_number'] ,'profile_picture': jsondata['profile_picture'], 'address': jsondata['address'], 'token': token} })
     else:
         return Response({'error': 'Invalid credentials'}, status=400)
 
