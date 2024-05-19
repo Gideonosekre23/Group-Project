@@ -7,8 +7,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { logoutUser, getCustomerInfo } from '../api/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NavigationDrawer = ({isOpen, toggleDrawer}) => {
   const drawerWidth = 300;
@@ -38,6 +41,18 @@ const NavigationDrawer = ({isOpen, toggleDrawer}) => {
     toggleDrawer();
   };
 
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      Alert.alert('Logout Successful', 'You have been logged out.');
+
+      navigation.navigate('Login');
+      toggleDrawer();
+    } catch (error) {
+      Alert.alert('Logout Failed', 'An error occurred during logout. Please try again.');
+    }
+  };
+
   return (
     <Animated.View style={[styles.drawer, {transform: [{translateX}]}]}>
       <TouchableOpacity
@@ -53,6 +68,9 @@ const NavigationDrawer = ({isOpen, toggleDrawer}) => {
       </TouchableOpacity>
       <TouchableOpacity>
         <Text style={styles.option}>Payment Method</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleLogout}>
+        <Text style={styles.option}>Log out</Text>
       </TouchableOpacity>
     </Animated.View>
   );

@@ -3,29 +3,35 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   StyleSheet,
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {COLORS} from './constants/colors';
+import { COLORS } from './constants/colors';
+import { scheduleTokenDeletion, loginUser } from './api/auth';
 
 const LoginScreen = ({navigation}) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = () => {
-    if (!email || !password) {
+  const handleLogin = async () => {
+    if (error) {
+      setError('');
+    }
+
+    if (!username || !password) {
       setError('Please enter both email and password');
       return;
     }
 
-    // Simulate login (replace with actual login logic)
-    if (email === 'test' && password === '123') {
+    try {
+      await loginUser({ username, password });
+      scheduleTokenDeletion();
+      console.log("Login Successful with username: " + username + "password: " + password);
       navigation.navigate('MainScreen');
-    } else {
-      setError('Invalid email or password');
+    } catch (error) {
+      setError(error.error ? error.error : "An error occurred, please try again.");
     }
   };
 
@@ -33,12 +39,12 @@ const LoginScreen = ({navigation}) => {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder="Username"
         placeholderTextColor="#bfbfbf"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
+        value={username}
+        onChangeText={setUsername}
+        autoCapitalize="words"
+        textContentType="username"
       />
       <TextInput
         style={styles.input}
@@ -47,6 +53,8 @@ const LoginScreen = ({navigation}) => {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        autoCapitalize="none"
+        textContentType="password"
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <View style={styles.loginButtonContainer}>

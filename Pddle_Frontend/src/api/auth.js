@@ -1,19 +1,19 @@
-import axios, { setAuthToken } from './axios';
+import axiosInstance from './axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const getCustomerInfo = async () => {
     try {
-      const response = await axios.get('/customer');
+      const response = await axiosInstance.get('/customer');
       return response.data;
     } catch (error) {
-      console.error('Error fetching customer info:', error.response || error.message || error);
+      console.warn('Error fetching customer info:', error.response || error.message || error);
       throw error.response ? error.response.data : error;
     }
   };
 
 export const registerUser = async (userData) => {
   try {
-    const response = await axios.post('/Register', userData);
+    const response = await axiosInstance.post('/Register/', userData);
     return response.data;
   } catch (error) {
     throw error.response.data;
@@ -22,22 +22,23 @@ export const registerUser = async (userData) => {
 
 export const loginUser = async (credentials) => {
   try {
-    const response = await axios.post('/Login', credentials);
-    const { token } = response.data;
+    const response = await axiosInstance.post('/Login/', credentials);
+    const token = response.data.user.token;
+    console.log(token);
     await AsyncStorage.setItem('token', token);
-    setAuthToken();
     return response.data;
   } catch (error) {
+    console.warn('Error logging in user:', error.response || error.message || error);
     throw error.response.data;
   }
 };
 
 export const logoutUser = async () => {
   try {
-    await axios.post('/Logout');
+    await axiosInstance.post('/Logout/');
     await AsyncStorage.removeItem('token');
-    setAuthToken();
   } catch (error) {
+    console.log("Logout Error: ", JSON.stringify(error, null, 2));
     throw error.response.data;
   }
 };
@@ -47,5 +48,5 @@ export const scheduleTokenDeletion = () => {
   setTimeout(async () => {
     await AsyncStorage.removeItem('token');
     setAuthToken();
-  }, 3600000); // 1 hour in milliseconds
+  }, 360000); // 1 hour in milliseconds
 };
