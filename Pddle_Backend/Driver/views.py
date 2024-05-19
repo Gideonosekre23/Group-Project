@@ -40,13 +40,13 @@ def register_driver(request):
         with transaction.atomic():
             user = User.objects.create_user(username=username, email=email, password=password)
             DriverProfile.objects.create(user=user,
-                                        phone_number=phone_number,
-                                        cpn=cpn, 
-                                        profile_picture=profile_picture,
-                                        latitude=latitude, 
-                                        longitude=longitude,
-                                        profile_picture=profile_picture  
-                                            )
+                                    phone_number=phone_number,
+                                    cpn=cpn, 
+                                    profile_picture=profile_picture,
+                                    latitude=latitude, 
+                                    longitude=longitude,
+                                    profile_picture=profile_picture  
+                                    )
             
         return Response({'message': 'Driver registered successfully'})
     except Exception as e:
