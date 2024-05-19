@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
+  Alert,
   View,
   Text,
   TextInput,
@@ -9,10 +10,12 @@ import {
   PermissionsAndroid,
   ActivityIndicator,
   TouchableOpacity,
+  BackHandler,
 } from 'react-native';
 import MapView from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import NavigationDrawer from './components/NavigationDrawer';
+import { useFocusEffect } from '@react-navigation/native';
 
 const MainScreen = () => {
   const [region, setRegion] = useState(null);
@@ -25,6 +28,32 @@ const MainScreen = () => {
       locateCurrentPosition();
     }
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        // You can show an alert to confirm exit
+        Alert.alert(
+          "Exit App",
+          "Are you sure you want to exit?",
+          [
+            {
+              text: "Cancel",
+              onPress: () => null,
+              style: "cancel"
+            },
+            { text: "YES", onPress: () => BackHandler.exitApp() }
+          ]
+        );
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [])
+  );
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
@@ -115,6 +144,7 @@ const styles = StyleSheet.create({
   },
   activityIndicator: {
     height: '80%',
+    backgroundColor: '#fff',
   },
   searchInput: {
     height: 40,

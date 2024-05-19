@@ -1,6 +1,8 @@
+from datetime import timedelta
 from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework import status
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.contrib.auth.models import User
@@ -20,6 +22,19 @@ def customer_list(request):
     customers = UserProfile.objects.all()
     serialized = UserProfileSerializer(customers, many=True)   
     return JsonResponse(serialized.data, safe=False)
+
+@api_view(['GET'])
+@login_required
+def check_token_validity(request):
+    try:
+        # If the request reaches this point, the token is valid
+        return Response({'message': 'Token is valid'}, status=status.HTTP_200_OK)
+    except AuthenticationFailed as e:
+        # Handle the case where the token is invalid or expired
+        return Response({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+    except Exception as e:
+        # Handle any other exceptions
+        return Response({'error': 'An unexpected error occurred: ' + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 def register_user(request):
@@ -70,7 +85,8 @@ def Login_user(request):
 
     if user is not None:
         # Create or retrieve token
-        _, token = AuthToken.objects.create(user)
+        expiry = timedelta(minutes=30)
+        _, token = AuthToken.objects.create(user, expiry=expiry)
         returninguser = UserProfileSerializer(user.userprofile)
         jsondata = returninguser.data
         return Response({'user ': {'username':user.username,'email':user.email, 'phone_number' : jsondata['phone_number'] ,'profile_picture': jsondata['profile_picture'], 'address': jsondata['address'], 'token': token} })

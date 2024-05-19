@@ -27,11 +27,19 @@ const LoginScreen = ({navigation}) => {
 
     try {
       await loginUser({ username, password });
-      scheduleTokenDeletion();
       console.log("Login Successful with username: " + username + "password: " + password);
       navigation.navigate('MainScreen');
     } catch (error) {
-      setError(error.error ? error.error : "An error occurred, please try again.");
+      if (error.response) {
+        console.log(error.response.data);
+        setError(error.response.data.error);
+      } else if (error.request) {
+        console.log(error.request);
+        setError('No response from the server.');
+      } else {
+        console.log('Error', error.message);
+        setError('An error occurred. Please try again.');
+      }
     }
   };
 

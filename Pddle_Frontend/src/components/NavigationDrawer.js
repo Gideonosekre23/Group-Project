@@ -10,7 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { logoutUser, getCustomerInfo } from '../api/auth';
+import { logoutUser, getCustomerInfo, updateProfile } from '../api/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NavigationDrawer = ({isOpen, toggleDrawer}) => {
@@ -45,12 +45,26 @@ const NavigationDrawer = ({isOpen, toggleDrawer}) => {
     try {
       await logoutUser();
       Alert.alert('Logout Successful', 'You have been logged out.');
-
+      AsyncStorage.removeItem('token');
       navigation.navigate('Login');
       toggleDrawer();
     } catch (error) {
       Alert.alert('Logout Failed', 'An error occurred during logout. Please try again.');
     }
+  };
+
+  const handleGetCustomerInfo = async () => {
+    try {
+      const data = await getCustomerInfo();
+      console.log("In handleGetInfo");
+      console.log(data);
+    } catch (err) {
+      Alert(err.message || 'Error fetching customer info');
+    }
+  };
+
+  const handleUpdate = async () => {
+    await updateProfile();
   };
 
   return (
@@ -71,6 +85,12 @@ const NavigationDrawer = ({isOpen, toggleDrawer}) => {
       </TouchableOpacity>
       <TouchableOpacity onPress={handleLogout}>
         <Text style={styles.option}>Log out</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleUpdate}>
+        <Text style={styles.option}>Update profile test</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleGetCustomerInfo}>
+        <Text style={styles.option}>Get Customer Info</Text>
       </TouchableOpacity>
     </Animated.View>
   );

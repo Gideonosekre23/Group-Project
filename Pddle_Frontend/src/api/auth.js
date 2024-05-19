@@ -11,12 +11,34 @@ export const getCustomerInfo = async () => {
     }
   };
 
+export const checkTokenValidity = async () => {
+    try {
+        const response = await axiosInstance.get('/token_valid');
+        console.log("Success check, with response: ", JSON.stringify(response, null, 2));
+        return response.status;
+      } catch (error) {
+        console.log("Error check, with error: ", JSON.stringify(error, null, 2));
+        
+        // Check if the error object has a response property
+        if (error.response) {
+          const reqStatus = error.response.status;
+          console.log("Request status: ", reqStatus);
+          return reqStatus;
+        } else {
+          // If no response property, log and handle as needed
+          console.log("No response received, error message: ", error.message);
+          return null;
+        }
+      }
+};
+
 export const registerUser = async (userData) => {
   try {
     const response = await axiosInstance.post('/Register/', userData);
     return response.data;
   } catch (error) {
-    throw error.response.data;
+    console.warn('Error registering user:', error.response || error.message || error);
+    throw error;
   }
 };
 
@@ -29,7 +51,7 @@ export const loginUser = async (credentials) => {
     return response.data;
   } catch (error) {
     console.warn('Error logging in user:', error.response || error.message || error);
-    throw error.response.data;
+    throw error;
   }
 };
 
@@ -43,10 +65,11 @@ export const logoutUser = async () => {
   }
 };
 
-// Function to clear token after a set time (e.g., 1 hour)
-export const scheduleTokenDeletion = () => {
-  setTimeout(async () => {
-    await AsyncStorage.removeItem('token');
-    setAuthToken();
-  }, 360000); // 1 hour in milliseconds
+export const updateProfile = async () => {
+    try {
+      await axiosInstance.put('/Update/', { phone_number: "0722999888" });
+      console.log("Succsesfull update")
+    } catch (error) {
+        console.log("Error update, with error: ", JSON.stringify(error, null, 2));
+    }
 };

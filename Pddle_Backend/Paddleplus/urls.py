@@ -14,6 +14,7 @@ urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     
     path('customer/', customer_views.customer_list),
+    path('token_valid/', customer_views.check_token_validity),
     path('Register/', customer_views.register_user),
     path('Login/', customer_views.Login_user),
     path('Logout/', customer_views.Logout_user),
