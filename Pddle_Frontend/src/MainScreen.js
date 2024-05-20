@@ -11,11 +11,13 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   BackHandler,
+  Image,
 } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import NavigationDrawer from './components/NavigationDrawer';
 import { useFocusEffect } from '@react-navigation/native';
+import { COLORS } from './constants/colors';
 
 const MainScreen = () => {
   const [region, setRegion] = useState(null);
@@ -106,7 +108,16 @@ const MainScreen = () => {
           showsUserLocation={true}
           followUserLocation={true}
           zoomEnabled={true}
-        />
+        >
+          <Marker
+            coordinate={{
+              latitude: region.latitude + 0.001, // Slightly adjusted latitude
+              longitude: region.longitude + 0.001, // Slightly adjusted longitude
+            }}
+          >
+            <Image source={require('../assets/images/Bike-transparent.png')} style={styles.bikeImage} />
+          </Marker>
+        </MapView>
       ) : (
         <ActivityIndicator
           style={styles.activityIndicator}
@@ -157,10 +168,10 @@ const styles = StyleSheet.create({
     top: 20,
     left: 10,
     zIndex: 1200, // Ensure it's above the navigation drawer
-    backgroundColor: '#dbdbdb',
+    backgroundColor: COLORS.primary,
     borderWidth: 1,
     borderRadius: 10,
-    borderColor: '#dbdbdb',
+    borderColor: COLORS.primary,
     width: 50,
     height: 50,
     justifyContent: 'center',
@@ -169,6 +180,11 @@ const styles = StyleSheet.create({
   menuIcon: {
     color: 'white',
     fontSize: 24,
+  },
+  bikeImage: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
   },
 });
 
