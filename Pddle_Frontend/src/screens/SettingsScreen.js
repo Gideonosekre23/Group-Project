@@ -1,6 +1,7 @@
 // SettingsScreen.js
 import React from 'react';
 import {View, Text, StyleSheet, Switch} from 'react-native';
+import { COLORS } from '../styles/colors';
 
 const SettingsScreen = () => {
   const [isDarkModeEnabled, setIsDarkModeEnabled] = React.useState(false);
@@ -36,12 +37,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: COLORS.text,
   },
   setting: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
+    color: COLORS.text,
   },
 });
 

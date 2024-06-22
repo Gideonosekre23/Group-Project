@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   View,
@@ -18,12 +18,17 @@ import Geolocation from 'react-native-geolocation-service';
 import NavigationDrawer from './components/NavigationDrawer';
 import { useFocusEffect } from '@react-navigation/native';
 import { COLORS } from './constants/colors';
+import { addBikeLocation } from './api/auth'; // Import the function from ./api/auth
 
-const MainScreen = () => {
+const MainScreenDriver = () => {
   const [region, setRegion] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [markerTitle, setMarkerTitle] = useState('');
+  const [markers, setMarkers] = useState([]);
+  const [selectedCoordinate, setSelectedCoordinate] = useState(null);
 
   useEffect(() => {
+    Alert.alert("On driver screen", "driver screen");
     if (Platform.OS === 'android') {
       requestLocationPermission();
     } else {
@@ -84,7 +89,7 @@ const MainScreen = () => {
   const locateCurrentPosition = () => {
     Geolocation.getCurrentPosition(
       position => {
-        const {latitude, longitude} = position.coords;
+        const { latitude, longitude } = position.coords;
         setRegion({
           latitude,
           longitude,
@@ -95,8 +100,29 @@ const MainScreen = () => {
       error => {
         alert(error.message);
       },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
+  };
+
+  const handleMapPress = (event) => {
+    const coordinate = event.nativeEvent.coordinate;
+    setSelectedCoordinate(coordinate);
+  };
+
+  const handleAddBike = () => {
+    if (selectedCoordinate && markerTitle) {
+      const newMarker = {
+        latitude: selectedCoordinate.latitude,
+        longitude: selectedCoordinate.longitude,
+        title: markerTitle,
+      };
+      setMarkers([...markers, newMarker]);
+      addBikeLocation(markerTitle, newMarker.latitude, newMarker.longitude);
+      setMarkerTitle('');
+      setSelectedCoordinate(null);
+    } else {
+      Alert.alert('Error', 'Please provide a title and select a location on the map.');
+    }
   };
 
   return (
@@ -108,15 +134,28 @@ const MainScreen = () => {
           showsUserLocation={true}
           followUserLocation={true}
           zoomEnabled={true}
+          onPress={handleMapPress}
         >
-          <Marker
-            coordinate={{
-              latitude: region.latitude + 0.001, // Slightly adjusted latitude
-              longitude: region.longitude + 0.001, // Slightly adjusted longitude
-            }}
-          >
-            <Image source={require('../assets/images/Bike-transparent.png')} style={styles.bikeImage} />
-          </Marker>
+          {markers.map((marker, index) => (
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: marker.latitude,
+                longitude: marker.longitude,
+              }}
+              title={marker.title}
+            >
+              <Image source={require('../assets/images/Bike-transparent.png')} style={styles.bikeImage} />
+            </Marker>
+          ))}
+          {selectedCoordinate && (
+            <Marker
+              coordinate={selectedCoordinate}
+              title="Selected Location"
+            >
+              <Image source={require('../assets/images/Bike-transparent.png')} style={styles.bikeImage} />
+            </Marker>
+          )}
         </MapView>
       ) : (
         <ActivityIndicator
@@ -129,7 +168,12 @@ const MainScreen = () => {
         <TextInput
           placeholder="Search for a location"
           style={styles.searchInput}
+          value={markerTitle}
+          onChangeText={setMarkerTitle}
         />
+        <TouchableOpacity style={styles.addButton} onPress={handleAddBike}>
+          <Text style={styles.addButtonText}>Add Bike</Text>
+        </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.menuButton} onPress={toggleDrawer}>
         <Text style={styles.menuIcon}>☰</Text>
@@ -145,13 +189,15 @@ const styles = StyleSheet.create({
   },
   map: {
     width: Dimensions.get('window').width,
-    height: '80%', // 70% of screen height
+    height: '80%', // 80% of screen height
   },
   searchBar: {
-    height: '20%', // 30% of screen height
+    height: '20%', // 20% of screen height
     backgroundColor: '#fff',
     padding: 20,
     justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   activityIndicator: {
     height: '80%',
@@ -162,12 +208,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     borderRadius: 5,
+    flex: 1,
+  },
+  addButton: {
+    marginLeft: 10,
+    backgroundColor: COLORS.primary,
+    padding: 10,
+    borderRadius: 5,
+  },
+  addButtonText: {
+    color: 'white',
   },
   menuButton: {
     position: 'absolute',
     top: 20,
     left: 10,
-    zIndex: 1200, // Ensure it's above the navigation drawer
+    zIndex: 1200,
     backgroundColor: COLORS.primary,
     borderWidth: 1,
     borderRadius: 10,
@@ -188,4 +244,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MainScreen;
+export default MainScreenDriver;

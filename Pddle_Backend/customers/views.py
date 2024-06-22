@@ -3,12 +3,13 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
 from knox.models import AuthToken
+from knox.auth import TokenAuthentication
 from django.contrib.auth import authenticate
-from rest_framework.permissions import IsAuthenticated
 from .models import UserProfile
 from .serializers import UserProfileSerializer
 from django.contrib.auth.decorators import login_required
@@ -24,7 +25,8 @@ def customer_list(request):
     return JsonResponse(serialized.data, safe=False)
 
 @api_view(['GET'])
-@login_required
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def check_token_validity(request):
     try:
         # If the request reaches this point, the token is valid
@@ -37,6 +39,7 @@ def check_token_validity(request):
         return Response({'error': 'An unexpected error occurred: ' + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def register_user(request):
     username = request.data.get('username')
     email = request.data.get('email')
@@ -76,6 +79,7 @@ def register_user(request):
         return Response({'error': str(e)}, status=400)
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def Login_user(request):
     username = request.data.get('username')
     password = request.data.get('password')

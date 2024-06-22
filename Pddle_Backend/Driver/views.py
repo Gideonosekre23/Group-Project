@@ -4,14 +4,16 @@ from django.db import transaction
 from rest_framework import status
 from rest_framework.decorators import api_view 
 from rest_framework.response import Response
+from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.models import User
 from knox.models import AuthToken
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
 from customers.models import UserProfile
-from customers.serializers import UserProfileSerializer
+from customers.serializers import DriverProfileSerializer, UserProfileSerializer
 from django.contrib.auth.decorators import login_required
-from knox.views import LogoutAllView 
+from knox.views import LogoutAllView
+from knox.auth import TokenAuthentication
 from django.contrib.auth import logout 
 from .models import DriverProfile
 
@@ -44,8 +46,7 @@ def register_driver(request):
                                     cpn=cpn, 
                                     profile_picture=profile_picture,
                                     latitude=latitude, 
-                                    longitude=longitude,
-                                    profile_picture=profile_picture  
+                                    longitude=longitude  
                                     )
             
         return Response({'message': 'Driver registered successfully'})
@@ -66,9 +67,9 @@ def Login_driver(request):
     if user is not None:
         # Create or retrieve token
         _, token = AuthToken.objects.create(user)
-        returninguser = UserProfileSerializer(user.userprofile)
+        returninguser = DriverProfileSerializer(user.userprofile)
         jsondata = returninguser.data
-        return Response({'user ': {'username':user.username,'email':user.email, 'phone_number' : jsondata['phone_number'] ,'profile_picture': jsondata['profile_picture'], 'address': jsondata['address'], 'token': token} })
+        return Response({'user': {'username':user.username,'email':user.email, 'phone_number' : jsondata['phone_number'] ,'profile_picture': jsondata['profile_picture'], 'token': token} })
     else:
         return Response({'error': 'Invalid credentials'}, status=400)
 

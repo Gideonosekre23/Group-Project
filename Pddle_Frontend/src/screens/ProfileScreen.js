@@ -1,11 +1,12 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image} from 'react-native';
+import { COLORS } from '../styles/colors';
 
 const ProfileScreen = () => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../assets/images/Profile_Picture.png')}
+        source={require('../assets/images/Profile_Picture.png')}
         style={styles.profilePicture}
       />
       <Text style={styles.name}>John Doe</Text>
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
   },
   email: {
     fontSize: 18,
-    color: 'gray',
+    color: COLORS.text,
     marginBottom: 20,
   },
 });

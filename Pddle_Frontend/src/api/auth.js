@@ -48,12 +48,37 @@ export const loginUser = async (credentials) => {
     const token = response.data.user.token;
     console.log(token);
     await AsyncStorage.setItem('token', token);
+    await AsyncStorage.setItem('role', 'customer');
     return response.data;
   } catch (error) {
     console.warn('Error logging in user:', error.response || error.message || error);
     throw error;
   }
 };
+
+export const registerDriver = async (userData) => {
+    try {
+      const response = await axiosInstance.post('/RegisterDriver/', userData);
+      return response.data;
+    } catch (error) {
+      console.warn('Error registering driver:', error.response || error.message || error);
+      throw error;
+    }
+  };
+  
+  export const loginDriver = async (credentials) => {
+    try {
+      const response = await axiosInstance.post('/LoginDriver/', credentials);
+      const token = response.data.user.token;
+      console.log(token);
+      await AsyncStorage.setItem('token', token);
+      await AsyncStorage.setItem('role', 'driver');
+      return response.data;
+    } catch (error) {
+      console.warn('Error logging in driver:', error.response || error.message || error);
+      throw error;
+    }
+  };
 
 export const logoutUser = async () => {
   try {
@@ -72,4 +97,26 @@ export const updateProfile = async () => {
     } catch (error) {
         console.log("Error update, with error: ", JSON.stringify(error, null, 2));
     }
+};
+
+export const getDriverBikes = async () => {
+  try {
+    const response = await axiosInstance.get('/GetBikes');
+    console.log("RESPONSE: ", JSON.stringify(response, null, 2));
+    return response.data;
+  } catch (error) {
+    console.warn('Error fetching bikes:', error.response || error.message || error);
+    throw error.response ? error.response.data : error;
+  }
+};
+
+export const addBike = async (bikeData) => {
+  try {
+    const response = await axiosInstance.post('/AddBike/', bikeData);
+    console.log("ADD BIKE RESPONSE: ", JSON.stringify(response, null, 2));
+    return response;
+  } catch (error) {
+    console.warn('Error add bike:', error.response || error.message || error);
+    throw error.response ? error.response.data : error;
+  }
 };

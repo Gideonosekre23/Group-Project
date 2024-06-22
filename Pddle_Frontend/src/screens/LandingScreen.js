@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { COLORS } from './constants/colors';
-import { globalStyles, theme } from './constants/styles';
+import { COLORS } from '../styles/colors';
+import { globalStyles, theme } from '../styles/styles';
 
 const LandingScreen = ({ navigation }) => {
   return (

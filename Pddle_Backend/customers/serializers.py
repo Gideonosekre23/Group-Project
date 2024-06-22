@@ -26,7 +26,7 @@ class DriverProfileSerializer(serializers.ModelSerializer):
         fields = ['user', 'profile_picture', 'cpn', 'phone_number', 'created_on', 'edited_at', 'latitude', 'longitude'] 
 
 class BikeSerializer(serializers.ModelSerializer):
-    current_location = serializers.SerializerMethodField()
+    # current_location = serializers.SerializerMethodField()
 
     class Meta:
         model = Bike
@@ -42,7 +42,7 @@ class BikeSerializer(serializers.ModelSerializer):
         driver_profile = DriverProfile.objects.get(user=user)
         validated_data['owner'] = driver_profile
         validated_data['is_available'] = False
-        validated_data['latitude'] = driver_profile.latitude
-        validated_data['longitude'] = driver_profile.longitude
+        # validated_data['latitude'] = driver_profile.latitude
+        # validated_data['longitude'] = driver_profile.longitude
         bike = Bike.objects.create(**validated_data)
         return bike

@@ -4,7 +4,7 @@ import { resetTo } from '../services/NavigationService';
 import { Alert } from 'react-native';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://192.168.0.105:8000', // Replace with your Django backend URL
+  baseURL: 'https://223a-86-125-92-84.ngrok-free.app', // Replace with your Django backend URL
   timeout: 15000
 });
 
@@ -41,3 +41,34 @@ axiosInstance.interceptors.response.use(
     });
 
 export default axiosInstance;
+
+export const handleApiError = error => {
+  if (error.response) {
+    const {status, data} = error.response;
+    let message = 'An error occurred. Please try again.';
+    switch (status) {
+      case 400:
+        message = data.error || 'Bad Request';
+        break;
+      case 401:
+        message = data.error || 'Unauthorized. Please log in again.';
+        break;
+      case 404:
+        message = data.error || 'Resource not found.';
+        break;
+      case 500:
+        message = 'Internal Server Error. Please try again later.';
+        break;
+      default:
+        message = data.error || 'An error occurred. Please try again.';
+    }
+    Alert.alert('Error', message);
+  } else if (error.request) {
+    Alert.alert(
+      'Error',
+      'No response from the server. Please check your network connection.',
+    );
+  } else {
+    Alert.alert('Error', error.message);
+  }
+};

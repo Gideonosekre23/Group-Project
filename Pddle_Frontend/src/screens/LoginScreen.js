@@ -7,13 +7,15 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { COLORS } from './constants/colors';
-import { scheduleTokenDeletion, loginUser } from './api/auth';
+import CheckBox from '@react-native-community/checkbox';
+import { COLORS } from '../styles/colors';
+import { loginUser, loginDriver } from '../api/auth';
 
 const LoginScreen = ({navigation}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isDriver, setIsDriver] = useState(false);
 
   const handleLogin = async () => {
     if (error) {
@@ -26,9 +28,15 @@ const LoginScreen = ({navigation}) => {
     }
 
     try {
-      await loginUser({ username, password });
-      console.log("Login Successful with username: " + username + "password: " + password);
-      navigation.navigate('MainScreen');
+      if (isDriver) {
+        await loginDriver({ username, password });
+        console.log("Driver Login Successful with username: " + username + " password: " + password);
+        navigation.navigate('MainScreenDriver');
+      } else {
+        await loginUser({ username, password });
+        console.log("User Login Successful with username: " + username + " password: " + password);
+        navigation.navigate('MainScreen');
+      }
     } catch (error) {
       if (error.response) {
         console.log(error.response.data);
@@ -65,6 +73,14 @@ const LoginScreen = ({navigation}) => {
         textContentType="password"
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
+      <View style={styles.checkboxContainer}>
+        <CheckBox
+          value={isDriver}
+          onValueChange={setIsDriver}
+          tintColors={{ true: COLORS.primary, false: '#bfbfbf' }}
+        />
+        <Text style={styles.checkboxLabel}>Login as Driver</Text>
+      </View>
       <View style={styles.loginButtonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>
@@ -87,6 +103,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     padding: 10,
+    color: '#333333',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  checkboxLabel: {
+    marginLeft: 8,
     color: '#333333',
   },
   loginButtonContainer: {

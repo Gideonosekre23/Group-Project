@@ -73,7 +73,7 @@ const NavigationDrawer = ({isOpen, toggleDrawer}) => {
         onPress={goToProfileScreen}
         style={styles.profileIconContainer}>
         <Image
-          source={require('../../assets/images/Profile_Picture.png')}
+          source={require('../assets/images/Profile_Picture.png')}
           style={styles.profileIcon}
         />
       </TouchableOpacity>

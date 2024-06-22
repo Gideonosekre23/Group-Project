@@ -11,6 +11,7 @@ class DriverProfile(models.Model):
     profile_picture = models.ImageField(upload_to="driver/profile/")
     cpn = models.CharField(max_length=13, validators=[MinLengthValidator(13), MaxLengthValidator(13)])
     phone_number = models.CharField(max_length=15)
+    # TODO: ADD ADDRESS
     created_on = models.DateTimeField(auto_now_add=True)
     edited_at = models.DateTimeField(auto_now=True)
     latitude = models.FloatField(null=True, blank=True)

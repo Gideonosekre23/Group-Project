@@ -7,8 +7,10 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { COLORS } from './constants/colors';
-import { getCustomerInfo, registerUser } from './api/auth';
+import CheckBox from '@react-native-community/checkbox';
+import Geolocation from 'react-native-geolocation-service';
+import { COLORS } from '../styles/colors';
+import { registerUser, registerDriver } from '../api/auth';
 
 const RegisterScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -19,6 +21,7 @@ const RegisterScreen = ({ navigation }) => {
   const [phone_number, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isDriver, setIsDriver] = useState(false);
 
   const handleRegister = async () => {
     if (error) {
@@ -48,9 +51,26 @@ const RegisterScreen = ({ navigation }) => {
     }
 
     try {
-      const messageResponse =
-        await registerUser({ username, email, password, phone_number, address, cpn })
-      console.log("Register successfull? Rsp.msg here -> ", messageResponse.message);
+      if (isDriver)
+        {
+          let lat, long;
+          Geolocation.getCurrentPosition(
+            position => {
+              const {latitude, longitude} = position.coords;
+              lat = latitude;
+              long = longitude;
+            });
+          
+          const messageResponse =
+            await registerDriver({ username, email, password, phone_number, address, cpn, lat, long })
+          console.log("Register driver successfull? Rsp.msg here -> ", messageResponse.message);
+          navigation.navigate('Login');
+        } else {
+          const messageResponse =
+            await registerUser({ username, email, password, phone_number, address, cpn })
+          console.log("Register user successfull? Rsp.msg here -> ", messageResponse.message);
+          navigation.navigate('Login');
+        }
     } catch (error) {
       if (error.response) {
         console.log(error.response.data);
@@ -63,8 +83,6 @@ const RegisterScreen = ({ navigation }) => {
         setError('An error occurred. Please try again.');
       }
     }
-
-    navigation.navigate('Auth');
   };
 
   return (
@@ -122,6 +140,14 @@ const RegisterScreen = ({ navigation }) => {
         secureTextEntry
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
+      <View style={styles.checkboxContainer}>
+        <CheckBox
+          value={isDriver}
+          onValueChange={setIsDriver}
+          tintColors={{ true: COLORS.primary, false: '#bfbfbf' }}
+        />
+        <Text style={styles.checkboxLabel}>Register as Driver</Text>
+      </View>
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
@@ -141,6 +167,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     padding: 10,
+    color: '#333333',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  checkboxLabel: {
+    marginLeft: 8,
     color: '#333333',
   },
   button: {

@@ -21,7 +21,8 @@ urlpatterns = [
     path('Search/<str:username>/', customer_views.search_user_profile),
     path('Remove/', customer_views.delete_user_profile),
     path('Update/', customer_views.update_user_profile),
-    
+
+    path('RegisterDriver/', driver_views.register_driver),
     path('LoginDriver/', driver_views.Login_driver),
     path('LogoutDriver/', driver_views.Logout_driver),
     path('UpdateDriver/', driver_views.update_driver_profile),
@@ -34,6 +35,7 @@ urlpatterns = [
     # path('UpdateLocation/', riderequest_views.update_location),
     
     path('AddBike/', bike_views.add_bike),
+    path('GetBikes/', bike_views.get_driver_bikes),
     path('MakeBikeAvailable/<int:bike_id>/', bike_views.make_bike_available),
     path('GetAvailableBikes/', bike_views.get_available_bikes),
     

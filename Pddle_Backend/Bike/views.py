@@ -1,5 +1,9 @@
 from django.shortcuts import render
 
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from knox.auth import TokenAuthentication
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -13,9 +17,14 @@ from geopy.distance import geodesic
 from .pricing import calculate_price
 
 @api_view(['POST'])
+@authentication_classes([TokenAuthentication])
 def add_bike(request):
     if request.user.is_authenticated and hasattr(request.user, 'driver_profile'):
-        serializer = BikeSerializer(data=request.data, context={'request': request})
+        driver_profile = request.user.driver_profile
+        data = request.data.copy()
+        data['owner'] = driver_profile.id
+
+        serializer = BikeSerializer(data=data, context={'request': request})
 
         if serializer.is_valid():
             bike = serializer.save()
@@ -25,6 +34,23 @@ def add_bike(request):
     else:
         return Response({'error': 'Only authenticated drivers can add bikes.'}, status=status.HTTP_403_FORBIDDEN)
 
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+# @permission_classes([IsAuthenticated])
+def get_driver_bikes(request):
+    try:
+        # Retrieve the driver profile from the authenticated user
+        driver_profile = request.user.driver_profile
+    except DriverProfile.DoesNotExist:
+        return Response({'error': 'Driver profile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Retrieve the bikes associated with the driver's profile
+    bikes = Bike.objects.filter(owner=driver_profile)
+    
+    # Serialize the bike data
+    serializer = BikeSerializer(bikes, many=True)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['PUT'])
 def make_bike_available(request, bike_id):

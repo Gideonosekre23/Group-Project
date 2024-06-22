@@ -4,12 +4,14 @@ import {Provider as PaperProvider, DefaultTheme} from 'react-native-paper';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import LandingScreen from './src/LandingScreen';
-import LoginScreen from './src/LoginScreen';
-import RegisterScreen from './src/RegisterScreen';
-import MainScreen from './src/MainScreen';
-import ProfileScreen from './src/components/ProfileScreen';
-import SettingsScreen from './src/components/SettingsScreen';
+import LandingScreen from './src/screens/LandingScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import RegisterScreen from './src/screens/RegisterScreen';
+import MainScreen from './src/screens/MainScreen';
+import MainScreenDriver from './src/screens/MainScreenDriver';
+import ProfileScreen from './src/screens/ProfileScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
+import AddBikeScreen from './src/screens/AddBikeScreen';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import { checkTokenValidity } from './src/api/auth';
 import { navigationRef } from './src/services/NavigationService';
@@ -28,12 +30,25 @@ const App = () => {
         setInitialRoute("LandingScreen");
       } else if (statusCode == 200) {
         console.log("Token valid");
-        setInitialRoute("MainScreen");
+        role = await AsyncStorage.getItem('role');
+
+        if (!role){
+          setInitialRoute("LandingScreen");
+          return;
+        }
+
+        console.log(role);
+        if (role == 'customer') {
+          setInitialRoute("MainScreen");
+          return;
+        }
+        setInitialRoute('MainScreenDriver');
       } else if (statusCode == 401) {
         AsyncStorage.removeItem('token');
         console.log("Token Invalid");
         setInitialRoute("LandingScreen");
       }
+      setInitialRoute("LandingScreen");
     }
 
     checkTokenValid();
@@ -73,6 +88,11 @@ const App = () => {
               options={{headerShown: false}}
             />
             <Stack.Screen
+              name="MainScreenDriver"
+              component={MainScreenDriver}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
               name="Profile"
               component={ProfileScreen}
               options={{headerShown: false}}
@@ -81,6 +101,11 @@ const App = () => {
               name="SettingsScreen"
               component={SettingsScreen}
               options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="AddBikeScreen"
+              component={AddBikeScreen}
+              options={{ headerShown: false }}
             />
           </Stack.Navigator>
         </NavigationContainer>
